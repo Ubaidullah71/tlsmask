@@ -1,0 +1,130 @@
+name: update
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # Mondays, 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Upstream version to update to (default the latest release)
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+env:
+  BRANCH: bot/tls-client-update
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.bump.outputs.changed }}
+      safe: ${{ steps.bump.outputs.safe }}
+      version: ${{ steps.bump.outputs.version }}
+      sha: ${{ steps.push.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - id: bump
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: python scripts/bump.py --version "$VERSION" --report "$RUNNER_TEMP/report.md" --github-output "$GITHUB_OUTPUT"
+      - id: push
+        if: steps.bump.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add -A
+          git commit -m "Update to bogdanfinn/tls-client v$VERSION"
+          git push --force origin "$BRANCH"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - if: steps.bump.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: report
+          path: ${{ runner.temp }}/report.md
+
+  tests:
+    needs: bump
+    if: needs.bump.outputs.changed == 'true'
+    uses: ./.github/workflows/tests.yml
+    with:
+      ref: bot/tls-client-update
+
+  pr:
+    needs: [bump, tests]
+    if: always() && needs.bump.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: report
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          TESTS: ${{ needs.tests.result }}
+          VERSION: ${{ needs.bump.outputs.version }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            cat report.md
+            echo
+            echo "### Tests"
+            echo
+            if [ "$TESTS" = "success" ]; then
+              echo "Every test passed on every platform ([run]($RUN_URL))."
+            else
+              echo "**Tests: $TESTS.** See [the run]($RUN_URL)."
+            fi
+          } > body.md
+          title="Update to bogdanfinn/tls-client v$VERSION"
+          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --repo "$GITHUB_REPOSITORY" --title "$title" --body-file body.md
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --head "$BRANCH" --base main --title "$title" --body-file body.md
+          fi
+
+  ship:
+    needs: [bump, tests, pr]
+    if: needs.bump.outputs.changed == 'true' && needs.bump.outputs.safe == 'true' && needs.tests.result == 'success' && vars.RELEASES_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.bump.outputs.version }}
+          TESTED: ${{ needs.bump.outputs.sha }}
+        run: |
+          # merge only the exact commit the tests ran on
+          gh pr merge "$BRANCH" --squash --delete-branch --match-head-commit "$TESTED"
+          git fetch origin main
+          if ! git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null; then
+            git tag "v$VERSION" origin/main
+            git push origin "v$VERSION"
+          fi
+          gh workflow run release.yml -f tag="v$VERSION" -f repository=pypi

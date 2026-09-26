@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  # A version on main that is not on PyPI yet gets released: a bot PR merged by
+  # hand, a wrapper-only fix (bump tlsmask/_version.py, push), or a release
+  # that failed earlier (the next push retries it). The bot's own merges don't
+  # trigger this workflow; it releases those itself.
+  release-if-new:
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.RELEASES_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: release-if-new
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c "import runpy; print(runpy.run_path('tlsmask/_version.py')['__version__'])")
+          if curl -sf "https://pypi.org/pypi/tlsmask/$version/json" >/dev/null; then
+            echo "tlsmask $version is already on PyPI"
+            exit 0
+          fi
+          if ! git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
+            git tag "v$version"
+            git push origin "v$version"
+          fi
+          gh workflow run release.yml -f tag="v$version" -f repository=pypi

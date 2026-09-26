@@ -1,0 +1,127 @@
+name: tests
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref to test (default the one that triggered the run)
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install "ruff==0.16.9"  # pinned: a new ruff must not block the update bot
+      - run: ruff check .
+      - run: ruff format --check .
+
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+      - run: pip install pytest hatchling
+      - run: pytest -q
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install hatchling twine
+      - run: python scripts/build_wheels.py --out dist
+      - run: twine check --strict dist/*.whl dist/*.tar.gz
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  real:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, arch: x64 }
+          - { os: windows-latest, arch: x86 }
+          - { os: macos-latest, arch: arm64 }
+          - { os: macos-26-intel, arch: x64 }
+          - { os: ubuntu-latest, arch: x64, live: true }
+          - { os: ubuntu-24.04-arm, arch: arm64 }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          architecture: ${{ matrix.arch }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - name: Test the installed wheel, not the source tree
+        run: rm -rf tlsmask
+      - run: "pip install --no-index --find-links dist --only-binary=:all: tlsmask"
+      - run: pip install pytest
+      - run: python -m tlsmask
+      - run: pytest tests/real -v
+        env:
+          TLSMASK_REQUIRE_LIBRARY: "1"
+          TLSMASK_EXPECT_INSTALLED: "1"
+      - if: matrix.live
+        run: pytest tests/live -m live -v
+
+  containers:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: armv7, image: "python:3.12-slim-bookworm", platform: "linux/arm/v7" }
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+      - if: matrix.platform != 'linux/amd64'
+        uses: docker/setup-qemu-action@v4
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: rm -rf tlsmask
+      - name: Install the wheel and run the real-library tests (${{ matrix.name }})
+        run: >
+          docker run --rm --platform ${{ matrix.platform }} -v "$PWD:/w" -w /w
+          -e TLSMASK_REQUIRE_LIBRARY=1 -e TLSMASK_EXPECT_INSTALLED=1 ${{ matrix.image }}
+          sh -c "pip install -q --no-index --find-links dist --only-binary :all: tlsmask
+          && pip install -q pytest && python -m tlsmask
+          && python -m pytest tests/real -v -p no:cacheprovider"

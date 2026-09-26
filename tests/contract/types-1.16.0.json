@@ -1,0 +1,146 @@
+{
+  "exports": [
+    "addCookiesToSession",
+    "destroyAll",
+    "destroySession",
+    "freeMemory",
+    "getCookiesFromSession",
+    "request"
+  ],
+  "structs": {
+    "AddCookiesToSessionInput": {
+      "cookies": "[]Cookie",
+      "sessionId": "string",
+      "url": "string"
+    },
+    "CandidateCipherSuite": {
+      "aeadId": "string",
+      "kdfId": "string"
+    },
+    "Cookie": {
+      "domain": "string",
+      "expires": "Timestamp",
+      "httpOnly": "bool",
+      "maxAge": "int",
+      "name": "string",
+      "path": "string",
+      "secure": "bool",
+      "value": "string"
+    },
+    "CookiesFromSessionOutput": {
+      "cookies": "[]Cookie",
+      "id": "string"
+    },
+    "CustomTlsClient": {
+      "ECHCandidateCipherSuites": "CandidateCipherSuites",
+      "ECHCandidatePayloads": "[]uint16",
+      "allowHttp": "bool",
+      "alpnProtocols": "[]string",
+      "alpsProtocols": "[]string",
+      "certCompressionAlgos": "[]string",
+      "connectionFlow": "uint32",
+      "h2Settings": "map[string]uint32",
+      "h2SettingsOrder": "[]string",
+      "h3PriorityParam": "uint32",
+      "h3PseudoHeaderOrder": "[]string",
+      "h3SendGreaseFrames": "bool",
+      "h3Settings": "map[string]uint64",
+      "h3SettingsOrder": "[]string",
+      "headerPriority": "*PriorityParam",
+      "ja3String": "string",
+      "keyShareCurves": "[]string",
+      "priorityFrames": "[]PriorityFrames",
+      "pseudoHeaderOrder": "[]string",
+      "recordSizeLimit": "uint16",
+      "streamId": "uint32",
+      "supportedDelegatedCredentialsAlgorithms": "[]string",
+      "supportedSignatureAlgorithms": "[]string",
+      "supportedVersions": "[]string",
+      "trustAnchorsPayload": "string"
+    },
+    "DestroyOutput": {
+      "id": "string",
+      "success": "bool"
+    },
+    "DestroySessionInput": {
+      "sessionId": "string"
+    },
+    "GetCookiesFromSessionInput": {
+      "sessionId": "string",
+      "url": "string"
+    },
+    "PriorityFrames": {
+      "priorityParam": "PriorityParam",
+      "streamID": "uint32"
+    },
+    "PriorityParam": {
+      "exclusive": "bool",
+      "streamDep": "uint32",
+      "weight": "uint8"
+    },
+    "RequestInput": {
+      "catchPanics": "bool",
+      "certificatePinningHosts": "map[string][]string",
+      "connectHeaders": "map[string][]string",
+      "customTlsClient": "*CustomTlsClient",
+      "defaultHeaders": "map[string][]string",
+      "disableHttp3": "bool",
+      "disableIPV4": "bool",
+      "disableIPV6": "bool",
+      "disableSessionTickets": "bool",
+      "followRedirects": "bool",
+      "forceHttp1": "bool",
+      "headerOrder": "[]string",
+      "headers": "map[string]string",
+      "insecureSkipVerify": "bool",
+      "isByteRequest": "bool",
+      "isByteResponse": "bool",
+      "isRotatingProxy": "bool",
+      "localAddress": "*string",
+      "proxyUrl": "*string",
+      "requestBody": "*string",
+      "requestCookies": "[]Cookie",
+      "requestHostOverride": "*string",
+      "requestMethod": "string",
+      "requestUrl": "string",
+      "serverNameOverwrite": "*string",
+      "sessionId": "*string",
+      "streamOutputBlockSize": "*int",
+      "streamOutputEOFSymbol": "*string",
+      "streamOutputPath": "*string",
+      "timeoutMilliseconds": "int",
+      "timeoutSeconds": "int",
+      "tlsClientIdentifier": "string",
+      "transportOptions": "*TransportOptions",
+      "withCustomCookieJar": "bool",
+      "withDebug": "bool",
+      "withProtocolRacing": "bool",
+      "withRandomTLSExtensionOrder": "bool",
+      "withoutCookieJar": "bool"
+    },
+    "Response": {
+      "body": "string",
+      "cookies": "map[string]string",
+      "headers": "map[string][]string",
+      "id": "string",
+      "sessionId": "string",
+      "status": "int",
+      "target": "string",
+      "usedProtocol": "string"
+    },
+    "TLSClientError": {},
+    "Timestamp": {},
+    "TransportOptions": {
+      "disableCompression": "bool",
+      "disableKeepAlives": "bool",
+      "idleConnTimeout": "*time.Duration",
+      "maxConnsPerHost": "int",
+      "maxIdleConns": "int",
+      "maxIdleConnsPerHost": "int",
+      "maxResponseHeaderBytes": "int64",
+      "readBufferSize": "int",
+      "writeBufferSize": "int"
+    }
+  },
+  "version": "1.16.0"
+}

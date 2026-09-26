@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+# bogdanfinn's library: fetched and hash-checked by scripts/fetch_binaries.py, shipped only inside wheels
+tlsmask/bin/

@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tlsmask"
+dynamic = ["version"]
+description = "A drop-in, always-current Python wrapper for bogdanfinn's tls-client: look like a real browser at the TLS and HTTP/2 layer."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT AND BSD-4-Clause"
+license-files = ["LICENSE", "LICENSE-tls-client"]
+authors = [{ name = "Ubaidullah71" }]
+keywords = ["tls", "ja3", "ja4", "http2", "fingerprint", "impersonate", "tls-client", "browser", "scraping"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet :: WWW/HTTP",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff==0.16.9", "hatchling>=1.27", "twine>=6.1"]
+
+[project.urls]
+Homepage = "https://github.com/Ubaidullah71/tlsmask"
+Source = "https://github.com/Ubaidullah71/tlsmask"
+Issues = "https://github.com/Ubaidullah71/tlsmask/issues"
+Changelog = "https://github.com/Ubaidullah71/tlsmask/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "tlsmask/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tlsmask"]
+exclude = ["tlsmask/bin"]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["tlsmask", "scripts", "tests", "hatch_build.py", "CHANGELOG.md", "docs/guide.md"]
+exclude = ["tlsmask/bin"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "scripts"]
+addopts = ["-m", "not live"]
+markers = ["live: needs the internet (a public TLS fingerprint echo service)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = ["tlsmask/_pins.py", "tlsmask/profiles.py", "tlsmask/_version.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]

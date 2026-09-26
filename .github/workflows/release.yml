@@ -1,0 +1,99 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to release, e.g. v1.16.0 (any ref for a TestPyPI dry run)
+        required: true
+      repository:
+        description: Where to publish
+        type: choice
+        options: [pypi, testpypi]
+        default: pypi
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.what.outputs.tag }}
+      target: ${{ steps.what.outputs.target }}
+    steps:
+      - id: what
+        env:
+          TAG_INPUT: ${{ inputs.tag }}
+          REPOSITORY_INPUT: ${{ inputs.repository }}
+        run: |
+          echo "tag=${TAG_INPUT:-$GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          echo "target=${REPOSITORY_INPUT:-pypi}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.what.outputs.tag }}
+      - env:
+          TAG: ${{ steps.what.outputs.tag }}
+          TARGET: ${{ steps.what.outputs.target }}
+        run: |
+          version=$(python3 -c "import runpy; print(runpy.run_path('tlsmask/_version.py')['__version__'])")
+          if [ "$TARGET" = "pypi" ] && [ "$TAG" != "v$version" ]; then
+            echo "::error::tag $TAG does not match tlsmask $version"
+            exit 1
+          fi
+
+  tests:
+    needs: check
+    uses: ./.github/workflows/tests.yml
+    with:
+      ref: ${{ needs.check.outputs.tag }}
+
+  publish:
+    needs: [check, tests]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.check.outputs.target }}
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: mkdir extras && mv dist/SHA256SUMS extras/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: ${{ needs.check.outputs.target == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+          packages-dir: dist/
+          skip-existing: true  # a re-run after a partial upload finishes the rest
+
+  github-release:
+    needs: [check, publish]
+    if: needs.check.outputs.target == 'pypi'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.check.outputs.tag }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.check.outputs.tag }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+          else
+            python3 scripts/render.py changelog-section "${TAG#v}" > notes.md
+            gh release create "$TAG" dist/* --title "tlsmask ${TAG#v}" --notes-file notes.md
+          fi

@@ -9,7 +9,7 @@
 <a href="https://pypistats.org/packages/tlsmask"><img src="https://img.shields.io/pypi/dm/tlsmask" alt="Downloads"></a>
 <a href="https://github.com/Ubaidullah71/tlsmask/actions/workflows/ci.yml"><img src="https://github.com/Ubaidullah71/tlsmask/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 <a href="https://github.com/Ubaidullah71/tlsmask/blob/main/LICENSE"><img src="https://img.shields.io/pypi/l/tlsmask" alt="License"></a>
-<!-- badge:start --><a href="https://github.com/bogdanfinn/tls-client/releases/tag/v1.16.0"><img src="https://img.shields.io/badge/bundles_tls--client-v1.16.0-0a7cff" alt="bundles tls-client v1.16.0"></a><!-- badge:end -->
+<!-- badge:start --><a href="https://github.com/bogdanfinn/tls-client/releases/tag/v1.18.1"><img src="https://img.shields.io/badge/bundles_tls--client-v1.18.1-0a7cff" alt="bundles tls-client v1.18.1"></a><!-- badge:end -->
 
 </div>
 
@@ -38,13 +38,13 @@ tlsmask carries on from there: the current library, the same API, those bugs fix
 <!-- stats:start -->
 | | `tls-client` (the old wrapper) | **tlsmask** |
 |---|:---:|:---:|
-| bogdanfinn/tls-client inside | v1.7.2 | **v1.16.0** |
-| Browser & app profiles | 51 | **83** |
-| Newest Chrome | 120 | **152** |
+| bogdanfinn/tls-client inside | v1.7.2 | **v1.18.1** |
+| Browser & app profiles | 51 | **86** |
+| Newest Chrome | 120 | **154** |
 | Newest Firefox | 120 | **148** |
 | Newest iOS Safari | 16.0 | **26.0** |
 | Brave | none | **146** |
-| Last updated | Feb 2024 | **Sep 2026** |
+| Last updated | Feb 2024 | **Nov 2026** |
 | Native library checked against a pinned SHA-256 | no | **yes, at build and at load** |
 | Keeps itself current | no | **yes, a weekly bot** |
 <!-- stats:end -->
@@ -146,14 +146,14 @@ For most uses, pick a current browser, such as the default (`tlsmask.DEFAULT_PRO
 `tlsmask.PROFILES` holds every name, and editors autocomplete them through the `tlsmask.ClientIdentifier` type.
 <!-- profiles:start -->
 <details>
-<summary><b>All 83 profiles in tls-client v1.16.0</b></summary>
+<summary><b>All 86 profiles in tls-client v1.18.1</b></summary>
 
 | Family | Profiles |
 |---|---|
-| Chrome | `chrome_103` `chrome_104` `chrome_105` `chrome_106` `chrome_107` `chrome_108` `chrome_109` `chrome_110` `chrome_111` `chrome_112` `chrome_116_PSK` `chrome_116_PSK_PQ` `chrome_117` `chrome_120` `chrome_124` `chrome_130_PSK` `chrome_131` `chrome_131_PSK` `chrome_133` `chrome_133_PSK` `chrome_144` `chrome_144_PSK` `chrome_146` `chrome_146_PSK` `chrome_150` `chrome_150_PSK` `chrome_152` `chrome_152_PSK` |
+| Chrome | `chrome_103` `chrome_104` `chrome_105` `chrome_106` `chrome_107` `chrome_108` `chrome_109` `chrome_110` `chrome_111` `chrome_112` `chrome_116_PSK` `chrome_116_PSK_PQ` `chrome_117` `chrome_120` `chrome_124` `chrome_130_PSK` `chrome_131` `chrome_131_PSK` `chrome_133` `chrome_133_PSK` `chrome_144` `chrome_144_PSK` `chrome_146` `chrome_146_PSK` `chrome_150` `chrome_150_PSK` `chrome_152` `chrome_152_PSK` `chrome_154` `chrome_154_PSK` |
 | Firefox | `firefox_102` `firefox_104` `firefox_105` `firefox_106` `firefox_108` `firefox_110` `firefox_117` `firefox_120` `firefox_123` `firefox_132` `firefox_133` `firefox_135` `firefox_146_PSK` `firefox_147` `firefox_147_PSK` `firefox_148` |
 | Safari (iOS & iPadOS) | `safari_ios_15_5` `safari_ios_15_6` `safari_ios_16_0` `safari_ios_17_0` `safari_ios_18_0` `safari_ios_18_5` `safari_ios_26_0` `safari_ipad_15_6` |
-| Safari (macOS) | `safari_15_6_1` `safari_16_0` |
+| Safari (macOS) | `safari_15_6_1` `safari_16_0` `safari_27_2` |
 | Opera | `opera_89` `opera_90` `opera_91` |
 | Brave | `brave_146` `brave_146_PSK` |
 | Mobile apps & others | `cloudscraper` `confirmed_android` `confirmed_ios` `mesh_android` `mesh_android_1` `mesh_android_2` `mesh_ios` `mesh_ios_1` `mesh_ios_2` `mms_ios` `mms_ios_1` `mms_ios_2` `mms_ios_3` `nike_android_mobile` `nike_ios_mobile` `okhttp4_android_7` `okhttp4_android_8` `okhttp4_android_9` `okhttp4_android_10` `okhttp4_android_11` `okhttp4_android_12` `okhttp4_android_13` `zalando_android_mobile` `zalando_ios_mobile` |

@@ -2,44 +2,44 @@
 
 from __future__ import annotations
 
-LIBRARY_VERSION = "1.16.0"
-LIBRARY_RELEASED = "2026-09-02"
+LIBRARY_VERSION = "1.18.1"
+LIBRARY_RELEASED = "2026-11-11"
 
 # target -> (upstream release asset, its SHA-256, wheel platform tag)
 BINARIES: dict[str, tuple[str, str, str]] = {
     "windows-amd64": (
-        "tls-client-windows-64-1.16.0.dll",
-        "53dca636b32d965ee6fe4562f39df959b2063febaa3d740efa925d1873cf11d7",
+        "tls-client-windows-64-1.18.1.dll",
+        "137232485faca9e577f9c7a11b35b3e5a7b59f64808d8df099fa9994459b4a44",
         "win_amd64",
     ),
     "windows-386": (
-        "tls-client-windows-32-1.16.0.dll",
-        "5203a36f80ea3f9cdfa43bf072a775702d1802acb8e4304e78905210f67dd2af",
+        "tls-client-windows-32-1.18.1.dll",
+        "59e68ef62cb345ed7a123627d0acc98169a5e97426d50fcd1c64d6a71b88328a",
         "win32",
     ),
     "darwin-arm64": (
-        "tls-client-darwin-arm64-1.16.0.dylib",
-        "99984d013921c753ab29d28720cb099eff6adf63538347e13652cb5cfe5bdc02",
+        "tls-client-darwin-arm64-1.18.1.dylib",
+        "5e607fffe854d67970886ae317c9edea2280565710ebb3f333be533ffb243ee6",
         "macosx_13_0_arm64",
     ),
     "darwin-amd64": (
-        "tls-client-darwin-amd64-1.16.0.dylib",
-        "6463457ea713a96b3b8c94fd9d8746e7bc510cb6784fcf0f4bb64d9c83e3251a",
+        "tls-client-darwin-amd64-1.18.1.dylib",
+        "561a79679514b4ded5ad44dc4baa88002d0770c4d30179a7673c789efe81e08a",
         "macosx_13_0_x86_64",
     ),
     "linux-amd64": (
-        "tls-client-linux-ubuntu-amd64-1.16.0.so",
-        "2ec853496634545e7a7ea028715763948d55bbdd97aca7ecaa9fea8c2ebb08df",
+        "tls-client-linux-ubuntu-amd64-1.18.1.so",
+        "719ad7f9772d4a72572e4eb9c1aace289a13eaa9bf3862c32f5dce6222d5644f",
         "manylinux_2_17_x86_64.manylinux2014_x86_64",
     ),
     "linux-arm64": (
-        "tls-client-linux-arm64-1.16.0.so",
-        "e398622f99c0ce8fccb50ff6e414f373b5932a0277ece90468a796992f0ae518",
+        "tls-client-linux-arm64-1.18.1.so",
+        "9ee40f45a5336142948cc8c6a5a2f7805aaf95a975348e3faef104c90d8c5c15",
         "manylinux_2_17_aarch64.manylinux2014_aarch64",
     ),
     "linux-armv7": (
-        "tls-client-linux-armv7-1.16.0.so",
-        "22baa029d4ee8cf327d10cda0e66c29cf256b3eb48e1fe9d6a76954b66f77711",
+        "tls-client-linux-armv7-1.18.1.so",
+        "a5b697a4ad4a87beba89899b4d5ea6c46e7c92a3fedf4dae837313498ac3f708",
         "manylinux_2_17_armv7l.manylinux2014_armv7l",
     ),
 }
@@ -78,6 +78,8 @@ PROFILES: frozenset[str] = frozenset(
         "chrome_150_PSK",
         "chrome_152",
         "chrome_152_PSK",
+        "chrome_154",
+        "chrome_154_PSK",
         "cloudscraper",
         "confirmed_android",
         "confirmed_ios",
@@ -121,6 +123,7 @@ PROFILES: frozenset[str] = frozenset(
         "opera_91",
         "safari_15_6_1",
         "safari_16_0",
+        "safari_27_2",
         "safari_ios_15_5",
         "safari_ios_15_6",
         "safari_ios_16_0",

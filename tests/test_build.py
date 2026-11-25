@@ -71,7 +71,7 @@ def test_a_platform_wheel_carries_exactly_its_file(project):
     licenses = {n.rsplit("/", 1)[-1] for n in names if "/licenses/" in n}
     assert licenses == {"LICENSE", "LICENSE-tls-client"}
     metadata = wheel.read(next(n for n in names if n.endswith(".dist-info/METADATA"))).decode()
-    assert "License-Expression: MIT AND BSD-4-Clause" in metadata
+    assert "License-Expression: MIT AND BSD-3-Clause" in metadata
 
 
 def test_a_plain_wheel_never_ships_a_binary(project):

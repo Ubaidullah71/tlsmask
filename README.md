@@ -222,9 +222,9 @@ pytest -m live                    # fingerprint checks against a public echo ser
 
 ## Credits
 
-- [bogdanfinn/tls-client](https://github.com/bogdanfinn/tls-client) does the real work. *This product includes software developed by Bogdan Finn*, distributed under the BSD 4-Clause license (see [LICENSE-tls-client](https://github.com/Ubaidullah71/tlsmask/blob/main/LICENSE-tls-client)).
+- [bogdanfinn/tls-client](https://github.com/bogdanfinn/tls-client) does the real work. *This product includes software developed by Bogdan Finn*, distributed under the BSD 3-Clause license (see [LICENSE-tls-client](https://github.com/Ubaidullah71/tlsmask/blob/main/LICENSE-tls-client)).
 - [FlorianREGAZ/Python-Tls-Client](https://github.com/FlorianREGAZ/Python-Tls-Client) designed the Python API that tlsmask keeps compatible.
 
 ## License
 
-tlsmask's own code is under the [MIT license](https://github.com/Ubaidullah71/tlsmask/blob/main/LICENSE). The bundled tls-client library is under the BSD 4-Clause license ([LICENSE-tls-client](https://github.com/Ubaidullah71/tlsmask/blob/main/LICENSE-tls-client)).
+tlsmask's own code is under the [MIT license](https://github.com/Ubaidullah71/tlsmask/blob/main/LICENSE). The bundled tls-client library is under the BSD 3-Clause license ([LICENSE-tls-client](https://github.com/Ubaidullah71/tlsmask/blob/main/LICENSE-tls-client)).

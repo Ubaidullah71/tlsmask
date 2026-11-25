@@ -5,7 +5,12 @@
     "destroySession",
     "freeMemory",
     "getCookiesFromSession",
-    "request"
+    "request",
+    "wsClose",
+    "wsConnect",
+    "wsRead",
+    "wsStats",
+    "wsWrite"
   ],
   "structs": {
     "AddCookiesToSessionInput": {
@@ -138,9 +143,97 @@
       "maxIdleConns": "int",
       "maxIdleConnsPerHost": "int",
       "maxResponseHeaderBytes": "int64",
+      "pingTimeout": "time.Duration",
       "readBufferSize": "int",
+      "readIdleTimeout": "time.Duration",
+      "responseHeaderTimeout": "time.Duration",
       "writeBufferSize": "int"
+    },
+    "WsCloseInput": {
+      "connectionId": "string"
+    },
+    "WsCloseOutput": {
+      "id": "string",
+      "success": "bool"
+    },
+    "WsConnectInput": {
+      "customTlsClient": "*CustomTlsClient",
+      "disableIPV4": "bool",
+      "disableIPV6": "bool",
+      "handshakeTimeoutMilliseconds": "int",
+      "headerOrder": "[]string",
+      "headers": "map[string]string",
+      "insecureSkipVerify": "bool",
+      "proxyUrl": "*string",
+      "readBufferSize": "int",
+      "serverNameOverwrite": "*string",
+      "sessionId": "*string",
+      "tlsClientIdentifier": "string",
+      "url": "string",
+      "withRandomTLSExtensionOrder": "bool",
+      "writeBufferSize": "int"
+    },
+    "WsConnectOutput": {
+      "connectionId": "string",
+      "id": "string",
+      "sessionId": "string",
+      "status": "int"
+    },
+    "WsReadInput": {
+      "connectionId": "string",
+      "timeoutMilliseconds": "int"
+    },
+    "WsReadOutput": {
+      "connectionId": "string",
+      "data": "string",
+      "id": "string",
+      "messageType": "int"
+    },
+    "WsStatsInput": {
+      "connectionId": "string"
+    },
+    "WsStatsOutput": {
+      "ageMs": "int64",
+      "bytesRead": "int64",
+      "bytesWritten": "int64",
+      "connectionId": "string",
+      "id": "string",
+      "lastWriteDurationMs": "int64",
+      "localAddr": "string",
+      "maxWriteDurationMs": "int64",
+      "messagesRead": "int64",
+      "messagesWritten": "int64",
+      "msSinceLastRead": "int64",
+      "msSinceLastWrite": "int64",
+      "remoteAddr": "string",
+      "tcp": "*WsTcpInfo",
+      "unreadPending": "bool"
+    },
+    "WsTcpInfo": {
+      "backoff": "uint8",
+      "lost": "uint32",
+      "msSinceLastAckRecv": "uint32",
+      "msSinceLastDataRecv": "uint32",
+      "msSinceLastDataSent": "uint32",
+      "notsentBytes": "uint32",
+      "retransmits": "uint8",
+      "rtoMs": "uint32",
+      "rttMs": "uint32",
+      "state": "uint8",
+      "totalRetrans": "uint32",
+      "unacked": "uint32"
+    },
+    "WsWriteInput": {
+      "connectionId": "string",
+      "data": "string",
+      "messageType": "int",
+      "timeoutMilliseconds": "int"
+    },
+    "WsWriteOutput": {
+      "connectionId": "string",
+      "id": "string",
+      "success": "bool"
     }
   },
-  "version": "1.16.0"
+  "version": "1.18.1"
 }
